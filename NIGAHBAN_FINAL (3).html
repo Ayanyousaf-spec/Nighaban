@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Nigahban — Final</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#070B14;--panel:#0C1220;--card:#121A2B;--line:#243044;
+  --gold:#C9A227;--gold2:#E8C547;--teal:#2DD4BF;--rose:#F43F5E;--ok:#34D399;--amber:#FBBF24;--blue:#60A5FA;
+  --text:#F4F7FB;--mute:#9AA8BC;--dim:#6B7C93;
+  --serif:"Cormorant Garamond",Georgia,serif;--sans:Inter,system-ui,sans-serif;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
+.app{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+.side{background:linear-gradient(165deg,#0E1628,#0A101C);border-right:1px solid var(--line);padding:26px 18px;display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
+.side::before{content:"";position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:radial-gradient(circle,rgba(201,162,39,.12),transparent 70%);pointer-events:none}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:10px;position:relative}
+.mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#E8C547,#8A6D1A);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 28px rgba(201,162,39,.35),inset 0 1px 0 rgba(255,255,255,.25)}
+.brand h1{font-family:var(--serif);font-size:26px;font-weight:700;background:linear-gradient(90deg,#F5E6A8,#C9A227);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand small{display:block;font-size:10px;color:var(--gold);font-weight:600;letter-spacing:1.2px;text-transform:uppercase;margin-top:1px}
+.lang{display:flex;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:3px;margin:6px 0 12px}
+.lang button{flex:1;border:0;background:0;color:var(--mute);padding:9px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.lang button.on{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1A1405}
+.nav button{width:100%;text-align:left;border:1px solid transparent;background:0;color:var(--text);padding:11px 12px;border-radius:12px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;gap:10px;align-items:center}
+.nav button:hover{background:rgba(201,162,39,.06)}
+.nav button.on{background:rgba(201,162,39,.12);border-color:rgba(201,162,39,.35);color:var(--gold2)}
+.big{margin-top:10px;width:100%;border:0;border-radius:13px;padding:14px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;color:#1A1405;background:linear-gradient(135deg,#F5E6A8,#C9A227);box-shadow:0 8px 28px rgba(201,162,39,.3)}
+.hint{margin-top:auto;font-size:11px;color:var(--dim);line-height:1.55;border-top:1px solid var(--line);padding-top:14px}
+.stage{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px;gap:16px;background:radial-gradient(ellipse 60% 40% at 50% -5%,rgba(201,162,39,.08),transparent 55%),var(--bg)}
+.phone{width:380px;height:820px;border-radius:48px;background:linear-gradient(180deg,#0B1220,#070B14);border:8px solid #1A2538;box-shadow:0 40px 120px rgba(0,0,0,.7),0 0 0 1px #2A3A52;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.notch{height:32px;display:flex;justify-content:center;align-items:flex-end;padding-bottom:6px}
+.notch i{width:112px;height:5px;background:#1E2D42;border-radius:10px;display:block}
+.screen{flex:1;overflow-y:auto;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+.view{display:none;padding:14px 18px 20px;animation:in .32s ease}
+.view.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.top h2{font-size:18px;font-weight:700}
+.pill{font-size:10px;font-weight:700;padding:4px 11px;border-radius:999px;border:1px solid}
+.ok{color:var(--ok);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.1)}
+.live{color:var(--teal);border-color:rgba(45,212,191,.35);background:rgba(45,212,191,.1)}
+.hot{color:var(--rose);border-color:rgba(244,63,94,.35);background:rgba(244,63,94,.1)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.muted{color:var(--mute);font-size:12px;line-height:1.55}
+.btn{width:100%;border:0;border-radius:14px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1A1405;box-shadow:0 6px 20px rgba(201,162,39,.25)}
+.danger{background:linear-gradient(135deg,#FB7185,#E11D48);color:#fff}
+.ghost{background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--text)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 6px;text-align:center}
+.stat b{display:block;font-size:18px;font-weight:800;color:var(--gold2)}
+.stat span{display:block;font-size:10px;color:var(--mute);margin-top:3px}
+select,input[type=text],input[type=password]{width:100%;background:#0F172A;border:1px solid var(--line);color:var(--text);border-radius:13px;padding:12px 14px;font-size:13px;margin-bottom:10px;font-family:inherit;outline:0}
+select:focus,input:focus{border-color:rgba(201,162,39,.55);box-shadow:0 0 0 3px rgba(201,162,39,.12)}
+.route{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:14px;background:#0F172A;border:1px solid transparent;margin-bottom:8px;cursor:pointer}
+.route.on{border-color:rgba(201,162,39,.45);background:rgba(201,162,39,.07)}
+.badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px}
+.safe{background:rgba(52,211,153,.15);color:var(--ok)}.warn{background:rgba(251,191,36,.15);color:var(--amber)}
+.map{height:150px;border-radius:18px;border:1px solid var(--line);margin-bottom:12px;position:relative;overflow:hidden;background:linear-gradient(160deg,#0C1A2C,#071018)}
+.map::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(201,162,39,.04) 1px,transparent 1px),linear-gradient(rgba(201,162,39,.04) 1px,transparent 1px);background-size:22px 22px}
+.road{position:absolute;background:#243B5A}
+.dot{position:absolute;width:13px;height:13px;border-radius:50%;border:2px solid #fff;transform:translate(-50%,-50%)}
+.you{background:var(--gold2);box-shadow:0 0 14px var(--gold)}.pol{background:var(--blue)}.sf{background:var(--ok)}.ca{background:var(--amber)}
+.lab{position:absolute;transform:translateX(-50%);font-size:9px;background:rgba(0,0,0,.75);padding:2px 6px;border-radius:4px}
+.item{display:flex;gap:10px;align-items:center;padding:11px;border-radius:14px;background:#0F172A;border:1px solid var(--line);margin-bottom:8px}
+.icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:16px;background:linear-gradient(145deg,#1A2538,#121A2B);flex-shrink:0}
+.sos{width:150px;height:150px;border-radius:50%;border:0;margin:18px auto;display:grid;place-items:center;font-size:24px;font-weight:800;color:#fff;cursor:pointer;font-family:inherit;background:radial-gradient(circle at 35% 30%,#FDA4AF,#E11D48);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(244,63,94,.45)}70%{box-shadow:0 0 0 22px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.step{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line);margin-bottom:8px;opacity:.35;transition:.4s}
+.step.done{opacity:1;border-color:rgba(201,162,39,.45);background:rgba(201,162,39,.06)}
+.chk{width:18px;color:var(--dim);font-weight:700}.step.done .chk{color:var(--ok)}
+.bnav{display:flex;justify-content:space-around;padding:10px 6px 16px;border-top:1px solid var(--line);background:rgba(12,18,32,.95)}
+.bnav button{border:0;background:0;color:var(--dim);font-size:9px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bnav button.on{color:var(--gold2)}.bnav .n{font-size:17px}
+.toast{position:absolute;left:14px;right:14px;bottom:84px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1A1405;padding:13px;border-radius:14px;font-size:12px;font-weight:700;text-align:center;transform:translateY(120%);opacity:0;transition:.3s;z-index:50}
+.toast.on{transform:none;opacity:1}
+.guide{position:absolute;top:0;left:0;right:0;z-index:40;display:none;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:linear-gradient(90deg,#8A6D1A,#C9A227);color:#1A1405;font-size:11px;font-weight:700}
+.guide.on{display:flex}
+.guide button{border:0;background:rgba(0,0,0,.2);color:#fff;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.score{width:116px;height:116px;border-radius:50%;margin:4px auto 6px;display:grid;place-items:center;background:conic-gradient(var(--ok) 0 85deg,#1F2937 85deg);position:relative}
+.score::after{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--card)}
+.score span{position:relative;z-index:1;font-size:20px;font-weight:800;color:var(--ok)}
+.foot{font-size:11px;color:var(--dim);text-align:center;max-width:380px}
+.chip{display:inline-flex;padding:5px 10px;border-radius:999px;background:#0F172A;border:1px solid var(--line);font-size:11px;margin:2px}
+.msg{min-height:74px;background:#0F172A;border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--mute);font-size:12px;line-height:1.5;margin-bottom:8px}
+.res{display:none;margin-top:8px;padding:12px;border-radius:14px;font-size:12px;line-height:1.5}
+.res.show{display:block}
+.hi{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);color:#FDA4AF}
+.md{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);color:#FDE68A}
+.lo{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);color:#6EE7B7}
+.label{font-size:10px;color:var(--mute);font-weight:600;margin:0 0 6px;text-transform:uppercase;letter-spacing:.5px}
+.screen.has-guide{padding-top:44px}
+.login-wrap{position:absolute;inset:0;z-index:80;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 20%,#152238,#070B14 70%);padding:28px 22px 24px}
+.login-wrap.hide{display:none}
+.login-top{text-align:center;margin-top:36px;margin-bottom:28px}
+.login-crest{width:72px;height:72px;border-radius:22px;margin:0 auto 14px;display:grid;place-items:center;font-size:34px;background:linear-gradient(145deg,#E8C547,#8A6D1A);box-shadow:0 12px 40px rgba(201,162,39,.35),inset 0 1px 0 rgba(255,255,255,.3)}
+.login-top h1{font-family:var(--serif);font-size:34px;font-weight:700;background:linear-gradient(90deg,#F5E6A8,#C9A227);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-top p{color:var(--mute);font-size:12px;margin-top:6px}
+.login-card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.login-card h3{font-size:15px;font-weight:700;margin-bottom:14px;text-align:center}
+.divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--dim);font-size:11px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.demo-accounts{font-size:11px;color:var(--dim);text-align:center;margin-top:10px;line-height:1.5}
+.user-bar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(201,162,39,.08);border:1px solid rgba(201,162,39,.2);margin-bottom:12px}
+.avatar{width:34px;height:34px;border-radius:11px;background:linear-gradient(145deg,#E8C547,#8A6D1A);display:grid;place-items:center;font-weight:800;color:#1A1405;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><div class="mark">🛡️</div><div><h1>Nigahban</h1><small>Final Demo</small></div></div>
+  <div class="lang">
+    <button class="on" id="btnEN" onclick="setLang('en')">English</button>
+    <button id="btnUR" onclick="setLang('ur')">اردو</button>
+  </div>
+  <div class="nav" id="sideNav">
+    <button data-view="home" class="on" onclick="go('home')">🏠 <span data-i18n="nav_home">Home</span></button>
+    <button data-view="route" onclick="go('route')">🗺️ <span data-i18n="nav_route">Safe Route</span></button>
+    <button data-view="places" onclick="go('places')">📍 <span data-i18n="nav_places">Nearby</span></button>
+    <button data-view="campus" onclick="go('campus')">🏫 <span data-i18n="nav_campus">Campus</span></button>
+    <button data-view="message" onclick="go('message')">💬 <span data-i18n="nav_msg">Message AI</span></button>
+    <button data-view="sos" onclick="go('sos')">🚨 <span data-i18n="nav_sos">Emergency</span></button>
+    <button data-view="proto" onclick="go('proto');resetProto()">📋 <span data-i18n="nav_proto">Protocol</span></button>
+    <button data-view="ai" onclick="go('ai')">🧠 <span data-i18n="nav_ai">Guardian AI</span></button>
+    <button data-view="walk" onclick="go('walk')">🚶 <span data-i18n="nav_walk">Safe Walk</span></button>
+    <button data-view="circle" onclick="go('circle')">👨‍👩‍👧 <span data-i18n="nav_circle">Trusted Circle</span></button>
+    <button data-view="report" onclick="go('report')">📝 <span data-i18n="nav_report">Report</span></button>
+    <button data-view="fakecall" onclick="go('fakecall')">📞 <span data-i18n="nav_fake">Fake Call</span></button>
+    <button data-view="history" onclick="go('history')">📜 <span data-i18n="nav_history">History</span></button>
+    <button data-view="community" onclick="go('community')">🌐 <span data-i18n="nav_community">Community</span></button>
+    <button data-view="settings" onclick="go('settings')">⚙️ <span data-i18n="nav_settings">Settings</span></button>
+    <button data-view="profile" onclick="go('profile')">👤 <span data-i18n="nav_profile">Profile</span></button>
+  </div>
+  <button class="big" onclick="startDemo()" data-i18n="auto_demo">▶ START AUTO DEMO</button>
+  <div class="hint" data-i18n="hint"><b>Classic + Modern UI</b><br>Login → full app demo.<br>Use demo account or any email.<br>Allow GPS when asked.</div>
+</aside>
+<main class="stage">
+<div class="phone">
+  <div class="login-wrap" id="login">
+    <div class="login-top">
+      <div class="login-crest">🛡️</div>
+      <h1>Nigahban</h1>
+      <p data-i18n="tagline">Safety before the threat arrives</p>
+    </div>
+    <div class="login-card">
+      <h3 data-i18n="sign_in">Sign in</h3>
+      <div class="label" data-i18n="email">Email</div>
+      <input id="email" type="text" placeholder="name@university.edu.pk" value="aisha@uok.edu.pk"/>
+      <div class="label" data-i18n="password">Password</div>
+      <input id="pass" type="password" placeholder="••••••••" value="demo1234"/>
+      <button class="btn primary" onclick="doLogin()" data-i18n="login_btn">Enter Nigahban</button>
+      <div class="divider"><span data-i18n="or">or</span></div>
+      <button class="btn ghost" onclick="doLogin(true)" data-i18n="demo_login">Continue as Demo User</button>
+      <div class="demo-accounts" data-i18n="demo_note">Demo: aisha@uok.edu.pk / demo1234</div>
+    </div>
+  </div>
+  <div class="guide" id="guide">
+    <span id="gTxt">Step</span>
+    <div style="display:flex;gap:6px">
+      <button onclick="nextDemo()" data-i18n="next">Next</button>
+      <button onclick="stopDemo()" data-i18n="skip">Skip</button>
+    </div>
+  </div>
+  <div class="notch"><i></i></div>
+  <div class="screen" id="screen">
+    <section id="home" class="view on">
+      <div class="top"><h2>Nigahban</h2><div class="pill ok">● <span data-i18n="protected">Protected</span></div></div>
+      <div class="user-bar">
+        <div class="avatar" id="avatar">A</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:13px" id="userName">Aisha Khan</div>
+          <div class="muted" style="font-size:11px" id="userCampus">University of Karachi</div>
+        </div>
+        <button class="btn ghost" style="width:auto;padding:6px 10px;font-size:10px" onclick="logout()" data-i18n="logout">Logout</button>
+      </div>
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div>
+          <div class="label" data-i18n="risk_level">Risk level</div>
+          <div style="font-weight:700;font-size:15px" data-i18n="area_safe">Area currently safe</div>
+          <div class="muted" id="cityName">Karachi</div>
+        </div>
+        <div class="score"><span data-i18n="low">Low</span></div>
+      </div>
+      <div class="card" style="display:flex;gap:10px;align-items:center">
+        <div style="font-size:20px">📍</div>
+        <div style="flex:1">
+          <div class="label" data-i18n="live_gps">Live GPS</div>
+          <div id="gps" style="font-size:12px;font-weight:600;color:var(--gold2)">Detecting...</div>
+        </div>
+        <button class="btn ghost" style="width:auto;padding:8px 10px;font-size:11px" onclick="getGPS()" data-i18n="refresh">Refresh</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>3</b><span data-i18n="trusted">Trusted</span></div>
+        <div class="stat"><b>14</b><span data-i18n="safe_days">Safe days</span></div>
+        <div class="stat"><b>6</b><span data-i18n="guards">Guards</span></div>
+      </div>
+
+      <div class="card" id="nightBanner" style="display:none;border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08)">
+        <div style="font-weight:700;color:var(--amber)">🌙 <span data-i18n="night_mode">Night caution active</span></div>
+        <div class="muted" data-i18n="night_mode_s">Extra monitoring after 9 PM · prefer main roads</div>
+      </div>
+      <div class="card">
+        <div class="label" data-i18n="week_score">Weekly safety score</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-family:var(--serif);font-size:32px;font-weight:700;color:var(--ok)">92</div>
+          <div class="muted" data-i18n="week_score_s">Strong week · 3 safe walks · 0 incidents</div>
+        </div>
+      </div>
+      <div class="label" data-i18n="quick">Quick actions</div>
+      <div class="row">
+        <button class="btn ghost" onclick="quickCheckin()" data-i18n="checkin">I'm OK Check-in</button>
+        <button class="btn ghost" onclick="go('fakecall')" data-i18n="nav_fake">Fake Call</button>
+      </div>
+      <div class="row">
+        <button class="btn ghost" onclick="go('walk')" data-i18n="nav_walk">Safe Walk</button>
+        <button class="btn ghost" onclick="go('report')" data-i18n="nav_report">Report</button>
+      </div>
+      <button class="btn primary" style="margin-top:8px" onclick="go('route')" data-i18n="start_journey">Start Safe Journey</button>
+      <div class="row">
+        <button class="btn ghost" onclick="go('message')" data-i18n="check_msg">Check Message</button>
+        <button class="btn danger" onclick="go('sos')" data-i18n="emergency">Emergency</button>
+      </div>
+    </section>
+    <section id="route" class="view">
+      <div class="top"><h2 data-i18n="safe_route">Safe Route</h2><div class="pill live">Live</div></div>
+      <div class="label" data-i18n="city">City</div>
+      <select id="city" onchange="renderCity()"></select>
+      <div class="label" data-i18n="university">University</div>
+      <select id="uni" onchange="syncCampus()"></select>
+      <div class="map">
+        <div class="road" style="top:46%;left:8%;width:84%;height:6px"></div>
+        <div class="road" style="top:18%;left:48%;width:6px;height:62%"></div>
+        <div class="dot you" style="top:58%;left:40%"></div><div class="lab" style="top:62%;left:40%">You</div>
+        <div class="dot sf" style="top:28%;left:72%"></div><div class="lab" style="top:32%;left:72%">Safe</div>
+        <div class="dot pol" style="top:74%;left:26%"></div><div class="lab" style="top:78%;left:26%">Police</div>
+        <div class="dot ca" style="top:24%;left:30%"></div><div class="lab" style="top:28%;left:30%">Caution</div>
+      </div>
+      <div id="routes"></div>
+      <button class="btn primary" onclick="toast(t('guardian_on'))" data-i18n="start_guardian">Start with Guardian</button>
+      <button class="btn ghost" style="margin-top:8px" onclick="shareGPS()" data-i18n="share_live">Share Live Location</button>
+    </section>
+    <section id="places" class="view">
+      <div class="top"><h2 data-i18n="nearby_help">Nearby Help</h2><div class="pill live" id="pCity">Karachi</div></div>
+      <div id="placesList"></div>
+    </section>
+    <section id="campus" class="view">
+      <div class="top"><h2 data-i18n="campus_sec">Campus Security</h2><div class="pill ok" data-i18n="on_duty">On Duty</div></div>
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)"></div>
+          <div>
+            <div style="font-weight:700" data-i18n="sec_active">Security Active</div>
+            <div class="muted" data-i18n="gate_hours">Main gate 24/7 · Patrol till 11 PM</div>
+          </div>
+        </div>
+      </div>
+      <div class="label" data-i18n="check_area">Check area</div>
+      <select id="area">
+        <option value="main">Main Gate</option><option value="hostel">Girls Hostel</option><option value="library">Library</option>
+        <option value="parking">Parking Area</option><option value="back">Back Gate</option><option value="science">Science Block</option>
+      </select>
+      <button class="btn primary" onclick="checkArea()" data-i18n="check_status">Check Status</button>
+      <div id="areaRes" class="res"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" onclick="toast(t('escort_req'))" data-i18n="escort">Request Escort</button>
+        <button class="btn ghost" onclick="callTel('15')" data-i18n="call_sec">Call Security</button>
+      </div>
+    </section>
+    <section id="message" class="view">
+      <div class="top"><h2 data-i18n="msg_ai">Message AI</h2><div class="pill live" data-i18n="analyzer">Analyzer</div></div>
+      <div class="msg" id="msgBox" contenteditable="true">Paste suspicious message...</div>
+      <div class="row">
+        <button class="btn ghost" onclick="sample(1)">Sample 1</button>
+        <button class="btn ghost" onclick="sample(2)">Sample 2</button>
+      </div>
+      <button class="btn ghost" style="margin-top:8px" onclick="sample(3)">Sample 3</button>
+      <button class="btn primary" style="margin-top:8px" onclick="analyze()" data-i18n="analyze">Analyze Risk</button>
+      <div id="msgRes" class="res"></div>
+    </section>
+    <section id="sos" class="view">
+      <div class="top"><h2 data-i18n="emergency">Emergency</h2><div class="pill hot" data-i18n="ready">Ready</div></div>
+      <p class="muted" style="text-align:center;margin-bottom:4px" data-i18n="sos_help">Tap SOS to run full response protocol</p>
+      <button class="sos" onclick="runSOS()">SOS</button>
+      <div style="text-align:center;margin-bottom:10px">
+        <span class="chip" style="cursor:pointer" onclick="simCall('Mom','+923001112233')">👩 Mom</span>
+        <span class="chip" style="cursor:pointer" onclick="simCall('Bhai','+923214445566')">👨 Bhai</span>
+        <span class="chip" style="cursor:pointer" onclick="simCall('Papa','+923225556677')">🧔 Papa</span>
+        <span class="chip" style="cursor:pointer" onclick="simCall('Sara','+923337778899')">👧 Sara</span>
+      </div>
+      <div class="item"><div class="icon">🚔</div><div style="flex:1"><b data-i18n="police">Police</b><div class="muted">15</div></div><button class="btn ghost" style="width:auto;padding:8px 10px" onclick="callTel('15')">15</button></div>
+      <div class="item"><div class="icon">🚑</div><div style="flex:1"><b>Rescue</b><div class="muted">1122</div></div><button class="btn ghost" style="width:auto;padding:8px 10px" onclick="callTel('1122')">1122</button></div>
+      <div class="item"><div class="icon">👩</div><div style="flex:1"><b data-i18n="women_hl">Women Helpline</b><div class="muted">1099</div></div><button class="btn ghost" style="width:auto;padding:8px 10px" onclick="callTel('1099')">1099</button></div>
+      <div class="item"><div class="icon">🆘</div><div style="flex:1"><b>Edhi</b><div class="muted">115</div></div><button class="btn ghost" style="width:auto;padding:8px 10px" onclick="callTel('115')">115</button></div>
+      <div class="item"><div class="icon">🔥</div><div style="flex:1"><b data-i18n="fire">Fire</b><div class="muted">16</div></div><button class="btn ghost" style="width:auto;padding:8px 10px" onclick="callTel('16')">16</button></div>
+    </section>
+    <section id="proto" class="view">
+      <div class="top"><h2 data-i18n="protocol">Response Protocol</h2><div class="pill hot">ACTIVE</div></div>
+      <div class="card" style="border-color:rgba(244,63,94,.35);background:rgba(244,63,94,.06)">
+        <div style="font-weight:800;color:var(--rose)" data-i18n="proto_run">🚨 Protocol running</div>
+        <div class="muted" data-i18n="proto_sub">Automated protection steps</div>
+      </div>
+      <div class="step" id="s1"><div class="chk">○</div><div><b data-i18n="p1">1. Lock GPS</b><div class="muted" data-i18n="p1s">Live coordinates attached</div></div></div>
+      <div class="step" id="s2"><div class="chk">○</div><div><b data-i18n="p2">2. Alert trusted circle</b><div class="muted">Mom · Brother · Sara</div></div></div>
+      <div class="step" id="s3"><div class="chk">○</div><div><b data-i18n="p3">3. Notify campus security</b><div class="muted" data-i18n="p3s">Control room + gate</div></div></div>
+      <div class="step" id="s4"><div class="chk">○</div><div><b data-i18n="p4">4. Prepare police package</b><div class="muted" data-i18n="p4s">Ready for 15</div></div></div>
+      <div class="step" id="s5"><div class="chk">○</div><div><b data-i18n="p5">5. Log incident</b><div class="muted" data-i18n="p5s">Secure record created</div></div></div>
+      <div class="step" id="s6"><div class="chk">○</div><div><b data-i18n="p6">6. Keep live tracking</b><div class="muted" data-i18n="p6s">Until marked safe</div></div></div>
+      <div id="protoDone" class="res lo" style="display:none"></div>
+      <button class="btn danger" style="margin-top:8px" onclick="callTel('15')" data-i18n="call_15">Call Police 15</button>
+      <button class="btn primary" style="margin-top:8px" onclick="toast(t('marked_safe'));resetProto()" data-i18n="im_safe">I'm Safe</button>
+      <button class="btn ghost" style="margin-top:8px" onclick="resetProto();runProto()">Re-run Protocol</button>
+    </section>
+    <section id="ai" class="view">
+      <div class="top"><h2 data-i18n="guardian_ai">Guardian AI</h2><div class="pill ok" data-i18n="active">Active</div></div>
+      <div class="card" style="text-align:center;padding:22px 14px">
+        <div style="font-size:40px;margin-bottom:8px">🛡️</div>
+        <div style="font-family:var(--serif);font-weight:700;font-size:20px" data-i18n="shadow">Personal Shadow Agent</div>
+        <div class="muted" data-i18n="shadow_sub">Learns your patterns to protect earlier</div>
+      </div>
+      <div class="card"><div class="label" data-i18n="known">Known pattern</div><div class="muted" id="aiInfo"></div></div>
+      <div class="card"><div class="label" data-i18n="insight">Live insight</div><div class="muted" id="aiTip"></div></div>
+    </section>
+
+    <section id="walk" class="view">
+      <div class="top"><h2 data-i18n="nav_walk">Safe Walk</h2><div class="pill live" id="walkPill">Idle</div></div>
+      <div class="card" style="text-align:center;padding:18px">
+        <div style="font-size:13px;color:var(--mute);margin-bottom:8px" data-i18n="walk_timer">Journey timer</div>
+        <div id="walkTime" style="font-family:var(--serif);font-size:42px;font-weight:700;color:var(--gold2)">00:00</div>
+        <div class="muted" id="walkStatus" style="margin-top:6px">Not started</div>
+      </div>
+      <div class="card">
+        <div class="label" data-i18n="walk_route">Active route</div>
+        <div class="muted" id="walkRoute">University Rd → Home</div>
+      </div>
+      <div class="card">
+        <div class="label" data-i18n="walk_share">Sharing with</div>
+        <div class="muted">👩 Mom · 👨 Bhai · 🧔 Papa · 👧 Sara</div>
+      </div>
+      <button class="btn primary" id="walkBtn" onclick="toggleWalk()" data-i18n="walk_start">Start Safe Walk</button>
+      <button class="btn danger" style="margin-top:8px" onclick="runSOS()" data-i18n="emergency">Emergency</button>
+    </section>
+
+    <section id="history" class="view">
+      <div class="top"><h2 data-i18n="nav_history">History</h2><div class="pill live">Log</div></div>
+      <div class="card" style="padding:0" id="histList">
+        <div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">✅</div><div style="flex:1"><b>Safe walk completed</b><div class="muted">Today · 22 min · Gulshan</div></div></div>
+        <div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">💬</div><div style="flex:1"><b>Message flagged high risk</b><div class="muted">Yesterday · Blocked sender</div></div></div>
+        <div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">🏫</div><div style="flex:1"><b>Campus check-in</b><div class="muted">2 days ago · Main Gate</div></div></div>
+        <div class="item" style="border:0;border-radius:0;margin:0"><div class="icon">📍</div><div style="flex:1"><b>Live location shared</b><div class="muted">3 days ago · Trusted circle</div></div></div>
+      </div>
+      <button class="btn ghost" style="margin-top:12px" onclick="toast(lang==='en'?'History cleared (demo)':'ہسٹری کلئیر (ڈیمو)')" data-i18n="clear_hist">Clear history</button>
+    </section>
+
+    <section id="settings" class="view">
+      <div class="top"><h2 data-i18n="nav_settings">Settings</h2><div class="pill live">Prefs</div></div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div><b data-i18n="set_silent">Silent distress</b><div class="muted" data-i18n="set_silent_s">Volume ×3 alert</div></div>
+          <input type="checkbox" id="setSilent" checked onchange="toast(t('saved'))"/>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div><b data-i18n="set_auto">Auto-share on SOS</b><div class="muted" data-i18n="set_auto_s">Send GPS to circle</div></div>
+          <input type="checkbox" id="setAuto" checked onchange="toast(t('saved'))"/>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div><b data-i18n="set_night">Night caution mode</b><div class="muted" data-i18n="set_night_s">Extra alerts after 9 PM</div></div>
+          <input type="checkbox" id="setNight" checked onchange="toast(t('saved'))"/>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><b data-i18n="set_campus">Campus auto-notify</b><div class="muted" data-i18n="set_campus_s">Alert security on SOS</div></div>
+          <input type="checkbox" id="setCampus" checked onchange="toast(t('saved'))"/>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label" data-i18n="tips">Safety tips</div>
+        <div class="muted" id="tipText">Prefer well-lit main roads after dark. Share live location on long walks.</div>
+      </div>
+      <button class="btn primary" onclick="nextTip()" data-i18n="next_tip">Next tip</button>
+    </section>
+
+
+    <section id="circle" class="view">
+      <div class="top"><h2 data-i18n="nav_circle">Trusted Circle</h2><div class="pill ok"><span id="circleCount">4</span></div></div>
+      <div id="circleList">
+        <div class="item"><div class="icon">👩</div><div style="flex:1"><b>Mom</b><div class="muted">Primary · +92 300 1112233</div></div>
+          <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="simCall('Mom','+923001112233')">Call</button>
+          <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="playRecord('Mom')">🔊</button>
+        </div>
+        <div class="item"><div class="icon">👨</div><div style="flex:1"><b>Bhai</b><div class="muted">Brother · +92 321 4445566</div></div>
+          <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="simCall('Bhai','+923214445566')">Call</button>
+          <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="playRecord('Bhai')">🔊</button>
+        </div>
+        <div class="item"><div class="icon">🧔</div><div style="flex:1"><b>Papa</b><div class="muted">Father · +92 322 5556677</div></div>
+          <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="simCall('Papa','+923225556677')">Call</button>
+          <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="playRecord('Papa')">🔊</button>
+        </div>
+        <div class="item"><div class="icon">👧</div><div style="flex:1"><b>Sara</b><div class="muted">Campus · +92 333 7778899</div></div>
+          <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="simCall('Sara','+923337778899')">Call</button>
+          <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="playRecord('Sara')">🔊</button>
+        </div>
+      </div>
+      <div class="label" style="margin-top:10px" data-i18n="call_records">Call records</div>
+      <div class="card" style="padding:0;max-height:180px;overflow:auto" id="callRecords">
+        <div class="muted" style="padding:12px" id="callRecEmpty">No calls yet · Call Mom / Bhai / Papa to log</div>
+      </div>
+      <div class="card" style="margin-top:4px">
+        <div class="label" data-i18n="custom_call">Custom number</div>
+        <input id="customNum" type="text" placeholder="+92 3XX XXXXXXX" inputmode="tel"/>
+        <button class="btn primary" onclick="callCustom()" data-i18n="call_now">Call now</button>
+      </div>
+      <div class="label" data-i18n="add_member">Add member (demo)</div>
+      <input id="newMember" type="text" placeholder="Name"/>
+      <button class="btn primary" onclick="addMember()" data-i18n="add_btn">Add to Circle</button>
+      <button class="btn ghost" style="margin-top:8px" onclick="toast(lang==='en'?'Alert sent to full circle':'پورا حلقہ مطلع')" data-i18n="ping_all">Ping everyone</button>
+    </section>
+
+    <section id="report" class="view">
+      <div class="top"><h2 data-i18n="nav_report">Report</h2><div class="pill live">Anon</div></div>
+      <div class="label" data-i18n="rep_type">Type</div>
+      <select id="repType">
+        <option value="harass">Harassment / following</option>
+        <option value="dark">Poor lighting / dark area</option>
+        <option value="suspect">Suspicious person</option>
+        <option value="other">Other safety issue</option>
+      </select>
+      <div class="label" data-i18n="rep_area">Area</div>
+      <input id="repArea" type="text" placeholder="e.g. University Road near gate"/>
+      <div class="label" data-i18n="rep_note">Note</div>
+      <div class="msg" id="repNote" contenteditable="true">Brief description...</div>
+      <button class="btn primary" onclick="submitReport()" data-i18n="rep_submit">Submit anonymous report</button>
+      <div id="repRes" class="res"></div>
+    </section>
+
+    <section id="fakecall" class="view">
+      <div class="top"><h2 data-i18n="nav_fake">Fake Call</h2><div class="pill live">Tool</div></div>
+      <div class="card" style="text-align:center;padding:22px" id="fakeUI">
+        <div style="font-size:14px;color:var(--mute)" data-i18n="fake_from">Incoming call</div>
+        <div style="font-family:var(--serif);font-size:28px;font-weight:700;margin:10px 0" id="fakeName">Mom</div>
+        <div class="muted" id="fakeState">Ready</div>
+        <div style="font-size:36px;margin:16px 0" id="fakeIcon">📱</div>
+      </div>
+      <div class="label" data-i18n="fake_who">Caller name</div>
+      <select id="fakeWho" onchange="document.getElementById('fakeName').textContent=this.value">
+        <option>Mom</option><option>Brother</option><option>Boss</option><option>Campus Security</option>
+      </select>
+      <button class="btn primary" onclick="startFake()" data-i18n="fake_start">Start Fake Call</button>
+      <button class="btn ghost" style="margin-top:8px" onclick="endFake()" data-i18n="fake_end">End Call</button>
+    </section>
+
+    <section id="community" class="view">
+      <div class="top"><h2 data-i18n="nav_community">Community</h2><div class="pill live">Pulse</div></div>
+      <div class="stats">
+        <div class="stat"><b id="cReports">47</b><span data-i18n="c_reports">Reports</span></div>
+        <div class="stat"><b id="cSafe">12</b><span data-i18n="c_safe">Safe spots</span></div>
+        <div class="stat"><b>89%</b><span data-i18n="c_feel">Feel safe</span></div>
+      </div>
+      <div class="label" data-i18n="c_vote">How safe do you feel here?</div>
+      <div class="row">
+        <button class="btn ghost" onclick="voteSafe(1)">😟 Low</button>
+        <button class="btn ghost" onclick="voteSafe(2)">😐 OK</button>
+      </div>
+      <button class="btn primary" style="margin-top:8px" onclick="voteSafe(3)">😊 Safe</button>
+      <div class="label" style="margin-top:12px" data-i18n="c_recent">Recent area notes</div>
+      <div class="card" style="padding:0">
+        <div class="item" style="border:0;border-bottom:1px solid var(--line);margin:0;border-radius:0"><div class="icon">🟢</div><div><b>Main gate well lit</b><div class="muted">2h ago · 14 agrees</div></div></div>
+        <div class="item" style="border:0;border-bottom:1px solid var(--line);margin:0;border-radius:0"><div class="icon">🟡</div><div><b>Side lane lights out</b><div class="muted">5h ago · Caution</div></div></div>
+        <div class="item" style="border:0;margin:0;border-radius:0"><div class="icon">🟢</div><div><b>Bus stop busy & safe</b><div class="muted">Yesterday</div></div></div>
+      </div>
+    </section>
+
+    <section id="profile" class="view">
+      <div class="top"><h2 data-i18n="nav_profile">Profile</h2><div class="pill live" data-i18n="active">Active</div></div>
+      <div class="card" style="text-align:center;padding:20px">
+        <div class="avatar" style="width:64px;height:64px;border-radius:20px;font-size:24px;margin:0 auto 12px" id="avatar2">A</div>
+        <div style="font-weight:800;font-size:18px" id="userName2">Aisha Khan</div>
+        <div class="muted" id="userEmail">aisha@uok.edu.pk</div>
+      </div>
+      <div class="card"><div class="label" data-i18n="trusted_circle">Trusted Circle</div><div class="muted">👩 Mom · 👨 Bhai · 🧔 Papa · 👧 Sara</div></div>
+      <div class="card"><div class="label" data-i18n="campus_label">Campus</div><div class="muted" id="profCampus">University of Karachi · Karachi</div></div>
+      <button class="btn ghost" onclick="logout()" data-i18n="logout">Logout</button>
+    </section>
+  </div>
+  <div class="bnav" id="bottomNav">
+    <button data-view="home" class="on" onclick="go('home')"><span class="n">🏠</span><span data-i18n="nav_home">Home</span></button>
+    <button data-view="route" onclick="go('route')"><span class="n">🗺️</span><span data-i18n="nav_route_short">Route</span></button>
+    <button data-view="sos" onclick="go('sos')"><span class="n">🚨</span><span>SOS</span></button>
+    <button data-view="profile" onclick="go('profile')"><span class="n">👤</span><span data-i18n="nav_profile">Profile</span></button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+<div class="foot" data-i18n="footer">Demo only · Not a live emergency dispatch system</div>
+</main>
+</div>
+<script>
+const I18N={en:{nav_home:'Home',nav_route:'Safe Route',nav_places:'Nearby',nav_campus:'Campus',nav_msg:'Message AI',nav_sos:'Emergency',nav_proto:'Protocol',nav_ai:'Guardian AI',nav_profile:'Profile',nav_route_short:'Route',auto_demo:'▶ START AUTO DEMO',hint:'<b>Classic + Modern UI</b><br>Login → full app demo.<br>Use demo account or any email.<br>Allow GPS when asked.',tagline:'Safety before the threat arrives',next:'Next',skip:'Skip',sign_in:'Sign in',email:'Email',password:'Password',login_btn:'Enter Nigahban',or:'or',demo_login:'Continue as Demo User',demo_note:'Demo: aisha@uok.edu.pk / demo1234',protected:'Protected',risk_level:'Risk level',area_safe:'Area currently safe',live_gps:'Live GPS',refresh:'Refresh',trusted:'Trusted',safe_days:'Safe days',guards:'Guards',low:'Low',start_journey:'Start Safe Journey',check_msg:'Check Message',emergency:'Emergency',logout:'Logout',safe_route:'Safe Route',city:'City',university:'University',start_guardian:'Start with Guardian',share_live:'Share Live Location',nearby_help:'Nearby Help',campus_sec:'Campus Security',on_duty:'On Duty',sec_active:'Security Active',gate_hours:'Main gate 24/7 · Patrol till 11 PM',check_area:'Check area',check_status:'Check Status',escort:'Request Escort',call_sec:'Call Security',msg_ai:'Message AI',analyzer:'Analyzer',analyze:'Analyze Risk',ready:'Ready',sos_help:'Tap SOS to run full response protocol',police:'Police',women_hl:'Women Helpline',fire:'Fire',protocol:'Response Protocol',proto_run:'🚨 Protocol running',proto_sub:'Automated protection steps',p1:'1. Lock GPS',p1s:'Live coordinates attached',p2:'2. Alert trusted circle',p3:'3. Notify campus security',p3s:'Control room + gate',p4:'4. Prepare police package',p4s:'Ready for 15',p5:'5. Log incident',p5s:'Secure record created',p6:'6. Keep live tracking',p6s:'Until marked safe',call_15:'Call Police 15',im_safe:"I'm Safe",guardian_ai:'Guardian AI',active:'Active',shadow:'Personal Shadow Agent',shadow_sub:'Learns your patterns to protect earlier',known:'Known pattern',insight:'Live insight',trusted_circle:'Trusted Circle',campus_label:'Campus',footer:'Demo only · Not a live emergency dispatch system',guardian_on:'Guardian tracking started',escort_req:'Escort requested',marked_safe:'Marked safe',gps_lock:'GPS locked',gps_deny:'Permission denied',calling:'Calling',city_set:'City set',demo_done:'Demo finished',proto_active:'Protocol active',shared:'Location shared',secure:'✓ Secure',caution:'⚠ Caution',high:'⚠️ High risk',scam:'⚠️ Scam pattern',lowrisk:'✓ Low risk',unclear:'Unclear',welcome:'Welcome',nav_walk:'Safe Walk',nav_history:'History',nav_settings:'Settings',walk_timer:'Journey timer',walk_route:'Active route',walk_share:'Sharing with',walk_start:'Start Safe Walk',walk_stop:'Stop Safe Walk',clear_hist:'Clear history',set_silent:'Silent distress',set_silent_s:'Volume ×3 alert',set_auto:'Auto-share on SOS',set_auto_s:'Send GPS to circle',set_night:'Night caution mode',set_night_s:'Extra alerts after 9 PM',set_campus:'Campus auto-notify',set_campus_s:'Alert security on SOS',tips:'Safety tips',next_tip:'Next tip',saved:'Settings saved',walk_on:'Safe walk in progress',walk_off:'Walk ended · saved to history',nav_circle:'Trusted Circle',nav_report:'Report',nav_fake:'Fake Call',nav_community:'Community',night_mode:'Night caution active',night_mode_s:'Extra monitoring after 9 PM · prefer main roads',week_score:'Weekly safety score',week_score_s:'Strong week · 3 safe walks · 0 incidents',quick:'Quick actions',checkin:"I'm OK Check-in",add_member:'Add member (demo)',add_btn:'Add to Circle',ping_all:'Ping everyone',rep_type:'Type',rep_area:'Area',rep_note:'Note',rep_submit:'Submit anonymous report',fake_from:'Incoming call',fake_who:'Caller name',fake_start:'Start Fake Call',fake_end:'End Call',c_reports:'Reports',c_safe:'Safe spots',c_feel:'Feel safe',c_vote:'How safe do you feel here?',c_recent:'Recent area notes',checkin_ok:'Check-in sent to trusted circle',rep_ok:'Report submitted anonymously',vote_ok:'Thanks · community pulse updated',fake_ring:'Calling...',fake_talk:'On call...',fake_end_t:'Call ended',custom_call:'Custom number',call_now:'Call now',call_records:'Call records'},ur:{nav_home:'ہوم',nav_route:'محفوظ راستہ',nav_places:'قریبی',nav_campus:'کیمپس',nav_msg:'پیغام AI',nav_sos:'ایمرجنسی',nav_proto:'پروٹوکول',nav_ai:'نگہبان AI',nav_profile:'پروفائل',nav_route_short:'راستہ',auto_demo:'▶ آٹو ڈیمو شروع',hint:'<b>کلاسک + ماڈرن UI</b><br>لاگ اِن → مکمل ڈیمو۔<br>ڈیمو اکاؤنٹ استعمال کریں۔<br>GPS اجازت دیں۔',tagline:'خطرے سے پہلے حفاظت',next:'اگلا',skip:'بند',sign_in:'سائن اِن',email:'ای میل',password:'پاس ورڈ',login_btn:'نگہبان میں داخل',or:'یا',demo_login:'ڈیمو یوزر کے طور پر جاری',demo_note:'ڈیمو: aisha@uok.edu.pk / demo1234',protected:'محفوظ',risk_level:'خطرے کی سطح',area_safe:'علاقہ فی الحال محفوظ',live_gps:'لائیو GPS',refresh:'ریفریش',trusted:'قابل اعتماد',safe_days:'محفوظ دن',guards:'گارڈز',low:'کم',start_journey:'محفوظ سفر شروع',check_msg:'پیغام چیک',emergency:'ایمرجنسی',logout:'لاگ آؤٹ',safe_route:'محفوظ راستہ',city:'شہر',university:'یونیورسٹی',start_guardian:'نگہبان کے ساتھ شروع',share_live:'لائیو لوکیشن شیئر',nearby_help:'قریبی مدد',campus_sec:'کیمپس سیکیورٹی',on_duty:'ڈیوٹی پر',sec_active:'سیکیورٹی فعال',gate_hours:'مین گیٹ ۲۴/۷ · گشت ۱۱ بجے تک',check_area:'علاقہ چیک',check_status:'سٹیٹس چیک',escort:'ایسکورٹ',call_sec:'سیکیورٹی کال',msg_ai:'پیغام AI',analyzer:'تجزیہ',analyze:'خطرہ جانچیں',ready:'تیار',sos_help:'مکمل پروٹوکول کے لیے SOS دبائیں',police:'پولیس',women_hl:'خواتین ہیلپ لائن',fire:'فائر',protocol:'ردعمل پروٹوکول',proto_run:'🚨 پروٹوکول چل رہا ہے',proto_sub:'خودکار حفاظتی مراحل',p1:'۱. GPS لاک',p1s:'لائیو کوآرڈینیٹس منسلک',p2:'۲. قابل اعتماد حلقہ',p3:'۳. کیمپس سیکیورٹی',p3s:'کنٹرول روم + گیٹ',p4:'۴. پولیس پیکج',p4s:'15 کے لیے تیار',p5:'۵. واقعہ لاگ',p5s:'محفوظ ریکارڈ',p6:'۶. لائیو ٹریکنگ',p6s:'محفوظ ہونے تک',call_15:'پولیس 15',im_safe:'میں محفوظ ہوں',guardian_ai:'نگہبان AI',active:'فعال',shadow:'ذاتی شیڈو ایجنٹ',shadow_sub:'جلد حفاظت کے لیے عادات سیکھتا ہے',known:'معلوم عادت',insight:'لائیو بصیرت',trusted_circle:'قابل اعتماد حلقہ',campus_label:'کیمپس',footer:'صرف ڈیمو · لائیو ایمرجنسی سروس نہیں',guardian_on:'نگہبان ٹریکنگ شروع',escort_req:'ایسکورٹ کی درخواست',marked_safe:'محفوظ قرار',gps_lock:'GPS لاک',gps_deny:'اجازت نہیں',calling:'کال',city_set:'شہر سیٹ',demo_done:'ڈیمو ختم',proto_active:'پروٹوکول فعال',shared:'لوکیشن شیئر',secure:'✓ محفوظ',caution:'⚠ احتیاط',high:'⚠️ زیادہ خطرہ',scam:'⚠️ اسکین',lowrisk:'✓ کم خطرہ',unclear:'غیر واضح',welcome:'خوش آمدید',nav_walk:'سیف واک',nav_history:'ہسٹری',nav_settings:'سیٹنگز',walk_timer:'سفر ٹائمر',walk_route:'فعال راستہ',walk_share:'شیئرنگ',walk_start:'سیف واک شروع',walk_stop:'سیف واک بند',clear_hist:'ہسٹری صاف',set_silent:'خاموش سگنل',set_silent_s:'والیوم ×۳ الرٹ',set_auto:'SOS پر آٹو شیئر',set_auto_s:'حلقے کو GPS',set_night:'نائٹ احتیاط',set_night_s:'۹ بجے بعد اضافی الرٹ',set_campus:'کیمپس آٹو نوٹیفائی',set_campus_s:'SOS پر سیکیورٹی',tips:'حفاظتی مشورے',next_tip:'اگلا مشورہ',saved:'سیٹنگز محفوظ',walk_on:'سیف واک جاری',walk_off:'واک ختم · ہسٹری میں محفوظ',nav_circle:'قابل اعتماد حلقہ',nav_report:'رپورٹ',nav_fake:'فرضی کال',nav_community:'کمیونٹی',night_mode:'نائٹ احتیاط فعال',night_mode_s:'۹ بجے بعد اضافی نگرانی · مین روڈ',week_score:'ہفتہ وار سیفٹی سکور',week_score_s:'اچھا ہفتہ · ۳ سیف واکس · ۰ واقعات',quick:'فوری اقدامات',checkin:'میں ٹھیک ہوں',add_member:'ممبر شامل (ڈیمو)',add_btn:'حلقے میں شامل',ping_all:'سب کو پنگ',rep_type:'قسم',rep_area:'علاقہ',rep_note:'نوٹ',rep_submit:'گمنام رپورٹ جمع',fake_from:'اِن کمنگ کال',fake_who:'کالر نام',fake_start:'فرضی کال شروع',fake_end:'کال ختم',c_reports:'رپورٹس',c_safe:'محفوظ مقامات',c_feel:'محسوس محفوظ',c_vote:'یہاں کتنا محفوظ؟',c_recent:'حالیہ نوٹس',checkin_ok:'چیک اِن حلقے کو بھیج دیا',rep_ok:'رپورٹ گمنام جمع',vote_ok:'شکریہ · کمیونٹی اپڈیٹ',fake_ring:'کال ہو رہی...',fake_talk:'کال جاری...',fake_end_t:'کال ختم',custom_call:'اپنا نمبر',call_now:'ابھی کال',call_records:'کال ریکارڈز'}};
+let lang='en',city='karachi',gpsData=null,demoStep=-1,demoTimer=null,protoBusy=false,loggedIn=false;
+const t=k=>(I18N[lang][k]||I18N.en[k]||k);
+const CITIES={karachi:{name:'Karachi',unis:['University of Karachi','NED University','IBA Karachi'],routes:[['University Rd → Boulevard','24 min · well lit · 2 police','Best','safe'],['Via Safoora','31 min · busy','Good','safe'],['Park Road short','19 min · low light','Caution','warn']],places:[['👮','Gulshan Police','0.8 km','15'],['👮','Safoora Chowki','1.1 km','15'],['🟢','Campus Main Gate','0.3 km',''],['🏥','Patel Hospital','2.1 km','1122']]},lahore:{name:'Lahore',unis:['University of the Punjab','LUMS','UET Lahore'],routes:[['Canal Road','28 min · well lit','Best','safe'],['Ferozepur Road','32 min · moderate','Good','safe'],['Ring Road short','22 min · dark patches','Caution','warn']],places:[['👮','Johar Town Police','1.0 km','15'],['👮','Model Town Police','1.5 km','15'],['🟢','Campus Security','0.2 km',''],['🏥','Hameed Latif','2.5 km','1122']]},islamabad:{name:'Islamabad',unis:['NUST','Quaid-i-Azam University','COMSATS'],routes:[['Kashmir Hwy','25 min · lit','Best','safe'],['IJP Road','30 min · busy','Good','safe'],['Service Road','20 min · quiet late','Caution','warn']],places:[['👮','Industrial Area Police','1.2 km','15'],['🟢','Campus Security','0.2 km',''],['🟢','Centaurus','3.5 km',''],['🏥','PIMS / Shifa','3.0 km','1122']]},peshawar:{name:'Peshawar',unis:['University of Peshawar','UET Peshawar'],routes:[['University Rd','20 min · main','Best','safe'],['Hayatabad Link','28 min','Good','safe'],['Inner lanes','16 min · dark','Caution','warn']],places:[['👮','University Town Police','0.9 km','15'],['🟢','Campus Gate','0.2 km',''],['🏥','LRH','2.8 km','1122']]},multan:{name:'Multan',unis:['Bahauddin Zakariya University','Emerson University'],routes:[['Bosan Road','22 min · lit','Best','safe'],['MDA Road','27 min','Good','safe'],['Colony lanes','18 min · quiet','Caution','warn']],places:[['👮','Gulgasht Police','1.0 km','15'],['🟢','BZU Security','0.3 km',''],['🏥','Nishtar Hospital','3.0 km','1122']]},faisalabad:{name:'Faisalabad',unis:['University of Agriculture','GCU Faisalabad'],routes:[['Canal Road','25 min · main','Best','safe'],['Susan Road','30 min','Good','safe'],['Colony short','17 min · dark','Caution','warn']],places:[['👮','Civil Lines Police','1.3 km','15'],['🟢','Campus Gate','0.2 km',''],['🏥','Allied Hospital','2.8 km','1122']]}};
+const cityEl=document.getElementById('city');
+Object.keys(CITIES).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=CITIES[k].name;cityEl.appendChild(o)});
+function applyI18n(){document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(I18N[lang][k]!==undefined)el.innerHTML=I18N[lang][k]});document.getElementById('btnEN').classList.toggle('on',lang==='en');document.getElementById('btnUR').classList.toggle('on',lang==='ur')}
+function setLang(l){lang=l;
+let walkTimer=null, walkSec=0, tipI=0;
+const TIPS_EN=['Prefer well-lit main roads after dark.','Share live location on long walks.','Save campus security number in favourites.','If followed, enter a busy shop and call trusted contact.','Avoid isolated shortcuts after 9 PM.'];
+const TIPS_UR=['اندھیرے بعد روشن مین روڈ ترجیح دیں۔','لمبے سفر پر لائیو لوکیشن شیئر کریں۔','کیمپس سیکیورٹی نمبر فیورٹ میں رکھیں۔','اگر پیچھا ہو تو مصروف دکان میں جائیں اور رابطہ کریں۔','۹ بجے بعد تنہا شارٹ کٹس سے گریز۔'];
+function toggleWalk(){
+  const btn=document.getElementById('walkBtn');
+  const pill=document.getElementById('walkPill');
+  const st=document.getElementById('walkStatus');
+  if(walkTimer){
+    clearInterval(walkTimer);walkTimer=null;
+    btn.textContent=t('walk_start');pill.textContent='Idle';st.textContent=lang==='en'?'Not started':'شروع نہیں';
+    toast(t('walk_off'));
+    const hl=document.getElementById('histList');
+    const m=Math.floor(walkSec/60), s=walkSec%60;
+    hl.insertAdjacentHTML('afterbegin',`<div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">✅</div><div style="flex:1"><b>Safe walk completed</b><div class="muted">Just now · ${m}m ${s}s</div></div></div>`);
+    walkSec=0;document.getElementById('walkTime').textContent='00:00';
+  } else {
+    walkSec=0;
+    walkTimer=setInterval(()=>{
+      walkSec++;
+      const m=String(Math.floor(walkSec/60)).padStart(2,'0');
+      const s=String(walkSec%60).padStart(2,'0');
+      document.getElementById('walkTime').textContent=m+':'+s;
+    },1000);
+    btn.textContent=t('walk_stop');pill.textContent='LIVE';pill.className='pill hot';
+    st.textContent=t('walk_on');
+    toast(t('walk_on'));
+    if(!gpsData)getGPS();
+  }
+}
+function nextTip(){
+  tipI=(tipI+1)%5;
+  document.getElementById('tipText').textContent=(lang==='en'?TIPS_EN:TIPS_UR)[tipI];
+}
+
+
+
+const VOICE = {
+  Mom: {
+    en: 'Beta, where are you? I am with you. Go to a safe place. I am calling you. Stay on the line.',
+    ur: 'بیٹا، تم کہاں ہو؟ میں تمہارے ساتھ ہوں۔ محفوظ جگہ چلی جاؤ۔ میں تمہیں کال کر رہی ہوں۔ لائن پر رہو۔'
+  },
+  Bhai: {
+    en: 'I am your brother. Tell me your location. I am coming. Stay where people can see you.',
+    ur: 'میں تمہارا بھائی ہوں۔ لوکیشن بتاؤ۔ میں آ رہا ہوں۔ جہاں لوگ ہوں وہیں رہو۔'
+  },
+  Papa: {
+    en: 'I am your father. You are not alone. Share your live location. I am contacting you now.',
+    ur: 'میں تمہارا باپ ہوں۔ تم اکیلے نہیں۔ لائیو لوکیشن شیئر کرو۔ میں اب تم سے رابطے میں ہوں۔'
+  },
+  Sara: {
+    en: 'Sara here. Are you okay? I can meet you at the main gate. Stay on call.',
+    ur: 'سارہ بول رہی ہوں۔ تم ٹھیک ہو؟ مین گیٹ پر مل سکتی ہوں۔ کال پر رہو۔'
+  }
+};
+function speak(text){
+  try{
+    if(!window.speechSynthesis){toast(lang==='en'?'Speaker not supported':'اسپیکر سپورٹ نہیں');return}
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang = lang==='ur' ? 'ur-PK' : 'en-US';
+    u.rate = 0.95;
+    u.pitch = 1;
+    window.speechSynthesis.speak(u);
+  }catch(e){console.log(e)}
+}
+function logCall(name, num, kind){
+  const box=document.getElementById('callRecords');
+  const empty=document.getElementById('callRecEmpty');
+  if(empty) empty.remove();
+  const now=new Date();
+  const time=now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const row=document.createElement('div');
+  row.className='item';
+  row.style.cssText='border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0';
+  row.innerHTML=`<div class="icon">📞</div><div style="flex:1"><b>${name}</b><div class="muted">${kind} · ${num} · ${time}</div></div>
+    <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="playRecord('${name}')">🔊</button>`;
+  box.insertBefore(row, box.firstChild);
+  const hl=document.getElementById('histList');
+  if(hl) hl.insertAdjacentHTML('afterbegin', `<div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">📞</div><div style="flex:1"><b>Call · ${name}</b><div class="muted">Just now · ${kind}</div></div></div>`);
+}
+function playRecord(name){
+  const pack=VOICE[name]||VOICE.Mom;
+  const text=pack[lang==='ur'?'ur':'en'];
+  toast((lang==='en'?'Playing record: ':'ریکارڈ چل رہا ہے: ')+name);
+  speak(text);
+}
+function simCall(name, num){
+  // open real dialer + play voice record on speaker
+  callAny(num, name);
+  logCall(name, num, lang==='en'?'Outgoing':'آؤٹ گوئنگ');
+  setTimeout(()=>playRecord(name), 600);
+}
+
+function updateNight(){const h=new Date().getHours();const b=document.getElementById('nightBanner');if(b)b.style.display=(h>=21||h<5)?'block':'none'}
+function quickCheckin(){toast(t('checkin_ok'));const hl=document.getElementById('histList');if(hl)hl.insertAdjacentHTML('afterbegin','<div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">💚</div><div style="flex:1"><b>I\'m OK check-in</b><div class="muted">Just now · Trusted circle</div></div></div>')}
+function addMember(){const n=(document.getElementById('newMember').value||'').trim();if(!n){toast(lang==='en'?'Enter a name':'نام لکھیں');return}const safe=n.replace(/[<>]/g,'');const list=document.getElementById('circleList');list.insertAdjacentHTML('beforeend',`<div class="item"><div class="icon">👤</div><div style="flex:1"><b>${safe}</b><div class="muted">New · Demo</div></div><button class="btn ghost" style="width:auto;padding:6px 10px;font-size:11px" onclick="callAny('15','${safe}')">Call</button></div>`);document.getElementById('newMember').value='';const c=document.getElementById('circleCount');c.textContent=String(+c.textContent+1);toast(lang==='en'?n+' added':'شامل: '+n)}
+function submitReport(){const area=(document.getElementById('repArea').value||'').trim();const note=(document.getElementById('repNote').innerText||'').trim();const r=document.getElementById('repRes');if(note.length<5){r.className='res show md';r.innerHTML=lang==='en'?'<b>Add a short note</b>':'<b>مختصر نوٹ لکھیں</b>';return}r.className='res show lo';r.innerHTML='<b>'+t('rep_ok')+'</b><br>'+(area||'Area n/a');toast(t('rep_ok'));document.getElementById('cReports').textContent=String(+document.getElementById('cReports').textContent+1);const hl=document.getElementById('histList');if(hl)hl.insertAdjacentHTML('afterbegin','<div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">📝</div><div style="flex:1"><b>Anonymous report</b><div class="muted">Just now · '+(area||'Area')+'</div></div></div>')}
+let fakeT=null;
+function startFake(){const name=document.getElementById('fakeWho').value;document.getElementById('fakeName').textContent=name;document.getElementById('fakeState').textContent=t('fake_ring');document.getElementById('fakeIcon').textContent='📲';if(fakeT)clearTimeout(fakeT);fakeT=setTimeout(()=>{document.getElementById('fakeState').textContent=t('fake_talk');document.getElementById('fakeIcon').textContent='📞';toast(t('fake_talk'))},2000)}
+function endFake(){if(fakeT)clearTimeout(fakeT);document.getElementById('fakeState').textContent=t('fake_end_t');document.getElementById('fakeIcon').textContent='📱';toast(t('fake_end_t'))}
+function voteSafe(level){toast(t('vote_ok'));document.getElementById('cSafe').textContent=String(+document.getElementById('cSafe').textContent+(level===3?1:0))}
+
+updateNight();
+applyI18n();renderCity(true);const box=document.getElementById('msgBox');if(box&&(box.innerText.includes('Paste')||box.innerText.includes('پیسٹ')||!box.innerText.trim()))box.innerText=lang==='en'?'Paste suspicious message...':'مشکوک پیغام پیسٹ کریں...'}
+function doLogin(demo){const email=(document.getElementById('email').value||'aisha@uok.edu.pk').trim();const name=demo?'Aisha Khan':(email.split('@')[0].replace(/[._]/g,' ')||'User');const nice=name.replace(/\b\w/g,c=>c.toUpperCase());document.getElementById('userName').textContent=nice;document.getElementById('userName2').textContent=nice;document.getElementById('userEmail').textContent=email;document.getElementById('avatar').textContent=nice.charAt(0);document.getElementById('avatar2').textContent=nice.charAt(0);loggedIn=true;document.getElementById('login').classList.add('hide');toast(t('welcome')+', '+nice.split(' ')[0]);setTimeout(getGPS,300)}
+function logout(){loggedIn=false;document.getElementById('login').classList.remove('hide');stopDemo();go('home')}
+function go(id){if(!loggedIn){toast(lang==='en'?'Please sign in first':'پہلے سائن اِن کریں');return}document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));const view=document.getElementById(id);if(!view)return;view.classList.add('on');document.querySelectorAll('#sideNav button').forEach(b=>b.classList.toggle('on',b.getAttribute('data-view')===id));document.querySelectorAll('#bottomNav button').forEach(b=>b.classList.toggle('on',b.getAttribute('data-view')===id))}
+function renderCity(silent){city=cityEl.value;const d=CITIES[city];document.getElementById('uni').innerHTML=d.unis.map(u=>`<option>${u}</option>`).join('');document.getElementById('userCampus').textContent=d.unis[0];document.getElementById('cityName').textContent=d.name;document.getElementById('pCity').textContent=d.name;document.getElementById('profCampus').textContent=d.unis[0]+' · '+d.name;document.getElementById('routes').innerHTML=d.routes.map((r,i)=>`<div class="route ${i?'':'on'}" onclick="selectRoute(this)"><div><div style="font-weight:700;font-size:13px">${r[0]}</div><div class="muted">${r[1]}</div></div><span class="badge ${r[3]}">${r[2]}</span></div>`).join('');document.getElementById('placesList').innerHTML=d.places.map(p=>`<div class="item"><div class="icon">${p[0]}</div><div style="flex:1"><b>${p[1]}</b><div class="muted">${p[2]}</div></div>${p[3]?`<button class="btn ghost" style="width:auto;padding:8px 10px" onclick="callTel('${p[3]}')">${p[3]}</button>`:''}</div>`).join('');document.getElementById('aiInfo').innerHTML=lang==='en'?`• City: ${d.name}<br>• Campus: ${d.unis[0]}<br>• Usual return: 5:30–7:00 PM<br>• High-risk window: after 9 PM`:`• شہر: ${d.name}<br>• کیمپس: ${d.unis[0]}<br>• واپسی: ۵:۳۰–۷:۰۰<br>• زیادہ خطرہ: ۹ بجے بعد`;document.getElementById('aiTip').textContent=lang==='en'?'Main route is safer tonight. Avoid low-light shortcuts.':'آج مین روڈ محفوظ تر ہے۔ کم روشنی والے شارٹ کٹس سے گریز۔';if(!silent)toast(t('city_set')+': '+d.name)}
+function selectRoute(el){el.parentNode.querySelectorAll('.route').forEach(x=>x.classList.remove('on'));el.classList.add('on')}
+function syncCampus(){const u=document.getElementById('uni').value;document.getElementById('userCampus').textContent=u;document.getElementById('profCampus').textContent=u+' · '+CITIES[city].name}
+function getGPS(){const el=document.getElementById('gps');if(!navigator.geolocation){el.textContent='GPS N/A';return}el.textContent=lang==='en'?'Detecting...':'ڈھونڈ رہا ہے...';navigator.geolocation.getCurrentPosition(p=>{gpsData={lat:p.coords.latitude,lng:p.coords.longitude,a:Math.round(p.coords.accuracy)};el.textContent=`${gpsData.lat.toFixed(5)}, ${gpsData.lng.toFixed(5)} (±${gpsData.a}m)`;toast(t('gps_lock'))},()=>{el.textContent=t('gps_deny')},{enableHighAccuracy:true,timeout:10000})}
+function shareGPS(){if(!gpsData)getGPS();toast(gpsData?`${t('shared')}: ${gpsData.lat.toFixed(4)}, ${gpsData.lng.toFixed(4)}`:t('gps_lock'))}
+function callTel(n){const allowed=new Set(['15','1122','1099','115','16']);if(!allowed.has(String(n))){toast('Invalid number');return}location.href='tel:'+n;toast(t('calling')+' '+n)}
+function callAny(num,label){const clean=String(num).replace(/[^0-9+]/g,'');if(clean.length<3){toast(lang==='en'?'Invalid number':'غلط نمبر');return}location.href='tel:'+clean;toast((t('calling')||'Calling')+' '+(label||clean))}
+function callCustom(){const v=(document.getElementById('customNum')||{}).value||'';callAny(v,v)}
+function checkArea(){const key=document.getElementById('area').value;const db={main:[1,'Secured · 2 guards · CCTV on','محفوظ · ۲ گارڈ · سی سی ٹی وی'],hostel:[1,'Secure · female guard · gate 10 PM','محفوظ · خاتون گارڈ · گیٹ ۱۰ بجے'],library:[1,'Clear · guard till 8 PM','صاف · گارڈ ۸ بجے تک'],parking:[0,'Partial cover · stay in light','جزوی کوریج · روشن جگہ رہیں'],back:[0,'Limited after 7 PM · prefer main gate','۷ بجے بعد محدود · مین گیٹ ترجیح'],science:[1,'Patrol active · emergency phone floor 1','گشت فعال · فلور ۱ ایمرجنسی فون']};const x=db[key]||db.main;const label=document.getElementById('area').selectedOptions[0].text;const r=document.getElementById('areaRes');r.className='res show '+(x[0]?'lo':'md');r.innerHTML=`<b>${x[0]?t('secure'):t('caution')} — ${label}</b><br>${lang==='en'?x[1]:x[2]}`}
+function sample(n){const s={1:["Hi, saw your profile. Meet tonight? I can pick you from uni. Don't tell anyone.","ہیلو، پروفائل دیکھی۔ آج رات ملیں؟ یونیورسٹی سے اٹھا سکتا ہوں۔ کسی کو نہ بتانا۔"],2:["Uni admin here. Share CNIC and home address for verification.","یونیورسٹی ایڈمن۔ تصدیق کے لیے شناختی کارڈ اور پتہ شیئر کریں۔"],3:["Your package is waiting. Click to confirm: http://bit.ly/track-now-99","آپ کا پارسل انتظار کر رہا ہے۔ تصدیق: http://bit.ly/track-now-99"]};document.getElementById('msgBox').innerText=s[n][lang==='en'?0:1];document.getElementById('msgRes').className='res'}
+function analyze(){const text=document.getElementById('msgBox').innerText.toLowerCase();const r=document.getElementById('msgRes');if(text.length<8||text.includes('paste')||text.includes('پیسٹ')){r.className='res show md';r.innerHTML=`<b>${t('unclear')}</b><br>${lang==='en'?'Paste a full message.':'مکمل پیغام دیں۔'}`;return}if(/don't tell|نہ بتانا|pick you|اٹھا|meet tonight/.test(text)){r.className='res show hi';r.innerHTML=`<b>${t('high')}</b><br>${lang==='en'?'Private meet + secrecy pressure. Block & report.':'نجی ملاقات + رازداری کا دباؤ۔ بلاک کریں۔'}`;return}if(/cnic|شناختی|address|پتہ|admin/.test(text)){r.className='res show hi';r.innerHTML=`<b>${t('scam')}</b><br>${lang==='en'?'Fake admin asking CNIC/address.':'جعلی ایڈمن شناختی کارڈ مانگ رہا ہے۔'}`;return}if(/http|bit\.ly|click|کلک/.test(text)){r.className='res show md';r.innerHTML=`<b>${lang==='en'?'⚠ Suspicious link':'⚠ مشکوک لنک'}</b><br>${lang==='en'?'Do not click.':'کلک نہ کریں۔'}`;return}r.className='res show lo';r.innerHTML=`<b>${t('lowrisk')}</b><br>${lang==='en'?'No strong red flags.':'کوئی بڑا ریڈ فلیگ نہیں۔'}`}
+function runSOS(){if(!gpsData)getGPS();go('proto');runProto()}
+function runProto(){if(protoBusy)return;protoBusy=true;resetProto(true);['s1','s2','s3','s4','s5','s6'].forEach((id,i)=>setTimeout(()=>{const el=document.getElementById(id);el.classList.add('done');el.querySelector('.chk').textContent='✓'},400+i*750));setTimeout(()=>{protoBusy=false;const loc=gpsData?`${gpsData.lat.toFixed(4)}, ${gpsData.lng.toFixed(4)}`:'…';const d=document.getElementById('protoDone');d.style.display='block';d.innerHTML=lang==='en'?`<b>${t('proto_active')}</b><br>GPS: ${loc}<br>Circle + campus notified · Police 15 ready`:`<b>${t('proto_active')}</b><br>GPS: ${loc}<br>حلقہ + کیمپس مطلع · پولیس 15 تیار`},5200)}
+function resetProto(keep){protoBusy=false;['s1','s2','s3','s4','s5','s6'].forEach(id=>{const el=document.getElementById(id);el.classList.remove('done');el.querySelector('.chk').textContent='○'});const d=document.getElementById('protoDone');if(d&&!keep)d.style.display='none'}
+function toast(m){const el=document.getElementById('toast');el.textContent=m;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2600)}
+function demoSteps(){return[['home',lang==='en'?'Home + weekly score':'ہوم + سکور'],['route',lang==='en'?'Safe routes':'محفوظ راستے'],['walk',lang==='en'?'Safe Walk':'سیف واک'],['circle',lang==='en'?'Trusted Circle':'حلقہ'],['fakecall',lang==='en'?'Fake Call tool':'فرضی کال'],['message',lang==='en'?'Message AI':'پیغام AI'],['report',lang==='en'?'Anonymous report':'رپورٹ'],['sos',lang==='en'?'Emergency':'ایمرجنسی'],['proto',lang==='en'?'Protocol':'پروٹوکول'],['community',lang==='en'?'Community pulse':'کمیونٹی'],['history',lang==='en'?'History':'ہسٹری'],['settings',lang==='en'?'Settings':'سیٹنگز'],['ai',lang==='en'?'Guardian AI':'نگہبان AI'],['home',lang==='en'?'Demo complete':'ڈیمو مکمل']]}
+function startDemo(){if(!loggedIn)doLogin(true);demoStep=-1;document.getElementById('guide').classList.add('on');document.getElementById('screen').classList.add('has-guide');nextDemo()}
+function stopDemo(){document.getElementById('guide').classList.remove('on');document.getElementById('screen').classList.remove('has-guide');demoStep=-1;if(demoTimer)clearTimeout(demoTimer)}
+function nextDemo(){const steps=demoSteps();demoStep++;if(demoStep>=steps.length){stopDemo();toast(t('demo_done'));return}const [view,txt]=steps[demoStep];go(view);document.getElementById('gTxt').textContent=`${demoStep+1}/${steps.length} · ${txt}`;if(view==='route'){cityEl.value='lahore';renderCity(true)}if(view==='message')sample(1);if(view==='proto'){resetProto();setTimeout(runProto,250)}if(demoTimer)clearTimeout(demoTimer);demoTimer=setTimeout(nextDemo,view==='proto'?6500:4000)}
+
+let walkTimer=null, walkSec=0, tipI=0;
+const TIPS_EN=['Prefer well-lit main roads after dark.','Share live location on long walks.','Save campus security number in favourites.','If followed, enter a busy shop and call trusted contact.','Avoid isolated shortcuts after 9 PM.'];
+const TIPS_UR=['اندھیرے بعد روشن مین روڈ ترجیح دیں۔','لمبے سفر پر لائیو لوکیشن شیئر کریں۔','کیمپس سیکیورٹی نمبر فیورٹ میں رکھیں۔','اگر پیچھا ہو تو مصروف دکان میں جائیں اور رابطہ کریں۔','۹ بجے بعد تنہا شارٹ کٹس سے گریز۔'];
+function toggleWalk(){
+  const btn=document.getElementById('walkBtn');
+  const pill=document.getElementById('walkPill');
+  const st=document.getElementById('walkStatus');
+  if(walkTimer){
+    clearInterval(walkTimer);walkTimer=null;
+    btn.textContent=t('walk_start');pill.textContent='Idle';st.textContent=lang==='en'?'Not started':'شروع نہیں';
+    toast(t('walk_off'));
+    const hl=document.getElementById('histList');
+    const m=Math.floor(walkSec/60), s=walkSec%60;
+    hl.insertAdjacentHTML('afterbegin',`<div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">✅</div><div style="flex:1"><b>Safe walk completed</b><div class="muted">Just now · ${m}m ${s}s</div></div></div>`);
+    walkSec=0;document.getElementById('walkTime').textContent='00:00';
+  } else {
+    walkSec=0;
+    walkTimer=setInterval(()=>{
+      walkSec++;
+      const m=String(Math.floor(walkSec/60)).padStart(2,'0');
+      const s=String(walkSec%60).padStart(2,'0');
+      document.getElementById('walkTime').textContent=m+':'+s;
+    },1000);
+    btn.textContent=t('walk_stop');pill.textContent='LIVE';pill.className='pill hot';
+    st.textContent=t('walk_on');
+    toast(t('walk_on'));
+    if(!gpsData)getGPS();
+  }
+}
+function nextTip(){
+  tipI=(tipI+1)%5;
+  document.getElementById('tipText').textContent=(lang==='en'?TIPS_EN:TIPS_UR)[tipI];
+}
+
+
+
+const VOICE = {
+  Mom: {
+    en: 'Beta, where are you? I am with you. Go to a safe place. I am calling you. Stay on the line.',
+    ur: 'بیٹا، تم کہاں ہو؟ میں تمہارے ساتھ ہوں۔ محفوظ جگہ چلی جاؤ۔ میں تمہیں کال کر رہی ہوں۔ لائن پر رہو۔'
+  },
+  Bhai: {
+    en: 'I am your brother. Tell me your location. I am coming. Stay where people can see you.',
+    ur: 'میں تمہارا بھائی ہوں۔ لوکیشن بتاؤ۔ میں آ رہا ہوں۔ جہاں لوگ ہوں وہیں رہو۔'
+  },
+  Papa: {
+    en: 'I am your father. You are not alone. Share your live location. I am contacting you now.',
+    ur: 'میں تمہارا باپ ہوں۔ تم اکیلے نہیں۔ لائیو لوکیشن شیئر کرو۔ میں اب تم سے رابطے میں ہوں۔'
+  },
+  Sara: {
+    en: 'Sara here. Are you okay? I can meet you at the main gate. Stay on call.',
+    ur: 'سارہ بول رہی ہوں۔ تم ٹھیک ہو؟ مین گیٹ پر مل سکتی ہوں۔ کال پر رہو۔'
+  }
+};
+function speak(text){
+  try{
+    if(!window.speechSynthesis){toast(lang==='en'?'Speaker not supported':'اسپیکر سپورٹ نہیں');return}
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang = lang==='ur' ? 'ur-PK' : 'en-US';
+    u.rate = 0.95;
+    u.pitch = 1;
+    window.speechSynthesis.speak(u);
+  }catch(e){console.log(e)}
+}
+function logCall(name, num, kind){
+  const box=document.getElementById('callRecords');
+  const empty=document.getElementById('callRecEmpty');
+  if(empty) empty.remove();
+  const now=new Date();
+  const time=now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const row=document.createElement('div');
+  row.className='item';
+  row.style.cssText='border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0';
+  row.innerHTML=`<div class="icon">📞</div><div style="flex:1"><b>${name}</b><div class="muted">${kind} · ${num} · ${time}</div></div>
+    <button class="btn ghost" style="width:auto;padding:6px 8px;font-size:11px" onclick="playRecord('${name}')">🔊</button>`;
+  box.insertBefore(row, box.firstChild);
+  const hl=document.getElementById('histList');
+  if(hl) hl.insertAdjacentHTML('afterbegin', `<div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">📞</div><div style="flex:1"><b>Call · ${name}</b><div class="muted">Just now · ${kind}</div></div></div>`);
+}
+function playRecord(name){
+  const pack=VOICE[name]||VOICE.Mom;
+  const text=pack[lang==='ur'?'ur':'en'];
+  toast((lang==='en'?'Playing record: ':'ریکارڈ چل رہا ہے: ')+name);
+  speak(text);
+}
+function simCall(name, num){
+  // open real dialer + play voice record on speaker
+  callAny(num, name);
+  logCall(name, num, lang==='en'?'Outgoing':'آؤٹ گوئنگ');
+  setTimeout(()=>playRecord(name), 600);
+}
+
+function updateNight(){const h=new Date().getHours();const b=document.getElementById('nightBanner');if(b)b.style.display=(h>=21||h<5)?'block':'none'}
+function quickCheckin(){toast(t('checkin_ok'));const hl=document.getElementById('histList');if(hl)hl.insertAdjacentHTML('afterbegin','<div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">💚</div><div style="flex:1"><b>I\'m OK check-in</b><div class="muted">Just now · Trusted circle</div></div></div>')}
+function addMember(){const n=(document.getElementById('newMember').value||'').trim();if(!n){toast(lang==='en'?'Enter a name':'نام لکھیں');return}const safe=n.replace(/[<>]/g,'');const list=document.getElementById('circleList');list.insertAdjacentHTML('beforeend',`<div class="item"><div class="icon">👤</div><div style="flex:1"><b>${safe}</b><div class="muted">New · Demo</div></div><button class="btn ghost" style="width:auto;padding:6px 10px;font-size:11px" onclick="callAny('15','${safe}')">Call</button></div>`);document.getElementById('newMember').value='';const c=document.getElementById('circleCount');c.textContent=String(+c.textContent+1);toast(lang==='en'?n+' added':'شامل: '+n)}
+function submitReport(){const area=(document.getElementById('repArea').value||'').trim();const note=(document.getElementById('repNote').innerText||'').trim();const r=document.getElementById('repRes');if(note.length<5){r.className='res show md';r.innerHTML=lang==='en'?'<b>Add a short note</b>':'<b>مختصر نوٹ لکھیں</b>';return}r.className='res show lo';r.innerHTML='<b>'+t('rep_ok')+'</b><br>'+(area||'Area n/a');toast(t('rep_ok'));document.getElementById('cReports').textContent=String(+document.getElementById('cReports').textContent+1);const hl=document.getElementById('histList');if(hl)hl.insertAdjacentHTML('afterbegin','<div class="item" style="border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0"><div class="icon">📝</div><div style="flex:1"><b>Anonymous report</b><div class="muted">Just now · '+(area||'Area')+'</div></div></div>')}
+let fakeT=null;
+function startFake(){const name=document.getElementById('fakeWho').value;document.getElementById('fakeName').textContent=name;document.getElementById('fakeState').textContent=t('fake_ring');document.getElementById('fakeIcon').textContent='📲';if(fakeT)clearTimeout(fakeT);fakeT=setTimeout(()=>{document.getElementById('fakeState').textContent=t('fake_talk');document.getElementById('fakeIcon').textContent='📞';toast(t('fake_talk'))},2000)}
+function endFake(){if(fakeT)clearTimeout(fakeT);document.getElementById('fakeState').textContent=t('fake_end_t');document.getElementById('fakeIcon').textContent='📱';toast(t('fake_end_t'))}
+function voteSafe(level){toast(t('vote_ok'));document.getElementById('cSafe').textContent=String(+document.getElementById('cSafe').textContent+(level===3?1:0))}
+
+updateNight();
+applyI18n();renderCity(true);
+</script>
+</body>
+</html>
